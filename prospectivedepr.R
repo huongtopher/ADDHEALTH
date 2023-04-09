@@ -277,6 +277,8 @@ dat[, 23][dat[, 23] == 997] <- NA
 
 #save(dat, file = "cleaned_data.RData")
 
+
+
 load('cleaned_data.RData')
 
 # keep adolescents only
@@ -302,40 +304,43 @@ library(networktools)         #bridge symptoms, goldbricker for node select
 
 
 nameslong <- c(
-  "You were bothered by things that usually don’t bother you.",
-  "You didn’t feel like eating, your appetite was poor.",
-  "You felt that you could not shake off the blues, even with help from your family and your friends",
-  "You felt that you were just as good as other people.",
-  "You had trouble keeping your mind on what you were doing.",
-  "You felt depressed.",
-  "You felt that you were too tired to do things.",
-  "You felt hopeful about the future.",
-  "You thought your life had been a failure.",
-  "You felt fearful.",
-  "You were happy.",
-  "You talked less than usual.",
-  "You felt lonely.",
-  "People were unfriendly to you.",
-  "You enjoyed life.",
-  "You felt sad.",
-  "You felt that people disliked you.",
-  "It was hard to get started doing things.",
-  "You felt life was not worth living.")
+  "1 You were bothered by things that usually don’t bother you.",
+  "2 You didn’t feel like eating, your appetite was poor.",
+ # "3 Couldn't shake off blues",
+  "4 You felt that you were just as good as other people.",
+  "5 You had trouble keeping your mind on what you were doing.",
+  "6 You felt depressed.",
+  "7 You felt that you were too tired to do things.",
+  "8 You felt hopeful about the future.",
+  "9 You thought your life had been a failure.",
+  "10 You felt fearful.",
+ # "11 Felt happy",
+  "12 You talked less than usual.",
+  "13 You felt lonely.",
+  "14 People were unfriendly to you.",
+  "15 You enjoyed life.",
+  "16 You felt sad.",
+  "17 You felt that people disliked you.",
+  "18 It was hard to get started doing things.",
+  "19 You felt life was not worth living.")
   
-  
-  
-  
+
   
   
 
 cesd <- dat %>%   #dataframe with symptom items
   select(D1:D19)
 
+
+
+
 gb <- goldbricker(cesd, p = 0.01, method = "hittner2003",
-                 threshold = 0.25, corMin = 0.5, progressbar = T)
+                 threshold = 0.5, corMin = 0.5, progressbar = T)
 gb
-# Suggested reductions: Less than 25 % of correlations are significantly different for the following pairs: 
-#   [1] "No suggested reductions"
+
+
+cesd <- cesd %>%
+  select(-c(D3,D11))
 
 
 net1 <- estimateNetwork(cesd, default = "EBICglasso",
@@ -348,11 +353,206 @@ netplot1 <- plot(net1, layout = "spring", vsize = 5,
                  nodeNames = nameslong)
 
 
-pdf("expectedinfluenceplot1.pdf", width = 4)
-ef1 <- centralityPlot(netplot1, include = "ExpectedInfluence")
-dev.off()
 
-ef1.df <- cbind(ef1$data$node, ef1$data$value)
+ef1 <- centralityPlot(net1, include = c("ExpectedInfluence"), scale = 'z-scores',
+                labels = nameslong)
+
+ef1.df <- cbind(ef1$data$node, nameslong, ef1$data$value)
+colnames(ef1.df) <- c('CESD', 'Symptom', 'ExpectedInfluence')
+
+View(ef1.df)
+
+# logistic models ---------------------------------------------------------
+
+
+mod1 <- glm(DEPR ~ D1, 
+            family = "binomial", data = dat)
+or1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+
+
+
+mod2 <- glm(DEPR ~ D2, 
+            family = "binomial", data = dat)
+or2 <- exp(cbind(OR = coef(mod2), confint(mod2)))[2,]
+
+# 
+# mod3 <- glm(DEPR ~ D3, 
+#             family = "binomial", data = dat)
+# or3 <- exp(cbind(OR = coef(mod3), confint(mod3)))[2,]
+
+
+mod4 <- glm(DEPR ~ D4, 
+            family = "binomial", data = dat)
+or4 <- exp(cbind(OR = coef(mod4), confint(mod4)))[2,]
+
+
+mod5 <- glm(DEPR ~ D5, 
+            family = "binomial", data = dat)
+or5 <- exp(cbind(OR = coef(mod5), confint(mod5)))[2,]
+
+
+mod6 <- glm(DEPR ~ D6, 
+            family = "binomial", data = dat)
+or6 <- exp(cbind(OR = coef(mod6), confint(mod6)))[2,]
+
+
+mod7 <- glm(DEPR ~ D7, 
+            family = "binomial", data = dat)
+or7 <- exp(cbind(OR = coef(mod7), confint(mod7)))[2,]
+
+
+mod8 <- glm(DEPR ~ D8, 
+            family = "binomial", data = dat)
+or8 <- exp(cbind(OR = coef(mod8), confint(mod8)))[2,]
+
+
+mod9 <- glm(DEPR ~ D9, 
+            family = "binomial", data = dat)
+or9 <- exp(cbind(OR = coef(mod9), confint(mod9)))[2,]
+
+
+
+mod10 <- glm(DEPR ~ D10, 
+            family = "binomial", data = dat)
+or10 <- exp(cbind(OR = coef(mod10), confint(mod10)))[2,]
+
+
+# 
+# mod11 <- glm(DEPR ~ D11, 
+#             family = "binomial", data = dat)
+# or11 <- exp(cbind(OR = coef(mod11), confint(mod11)))[2,]
+
+
+
+mod12 <- glm(DEPR ~ D12, 
+            family = "binomial", data = dat)
+or12 <- exp(cbind(OR = coef(mod12), confint(mod12)))[2,]
+
+
+
+mod13 <- glm(DEPR ~ D13, 
+            family = "binomial", data = dat)
+or13 <- exp(cbind(OR = coef(mod13), confint(mod13)))[2,]
+
+
+
+mod14 <- glm(DEPR ~ D14, 
+            family = "binomial", data = dat)
+or14 <- exp(cbind(OR = coef(mod14), confint(mod14)))[2,]
+
+
+
+mod15 <- glm(DEPR ~ D15, 
+            family = "binomial", data = dat)
+or15 <- exp(cbind(OR = coef(mod15), confint(mod15)))[2,]
+
+
+
+mod16 <- glm(DEPR ~ D16, 
+            family = "binomial", data = dat)
+or16 <- exp(cbind(OR = coef(mod16), confint(mod16)))[2,]
+
+
+mod17 <- glm(DEPR ~ D17, 
+            family = "binomial", data = dat)
+or17 <- exp(cbind(OR = coef(mod17), confint(mod17)))[2,]
+
+
+mod18 <- glm(DEPR ~ D18, 
+            family = "binomial", data = dat)
+or18 <- exp(cbind(OR = coef(mod18), confint(mod18)))[2,]
+
+
+
+
+mod19 <- glm(DEPR ~ D19, 
+             family = "binomial", data = dat)
+or19 <- exp(cbind(OR = coef(mod19), confint(mod19)))[2,]
+
+
+
+or_all <- rbind(or1,or2,or4,or5,or6,or7,or8,or9,
+                or10,or12,or13,or14,or15,or16,or17,or18,or19)
+
+
+results <- cbind(ef1.df, or_all)
+results <- as.data.frame(results)
+options(digits = 2)
+results$ExpectedInfluence <- as.numeric(results$ExpectedInfluence)
+results$OR <- as.numeric(results$OR)
+results$`2.5 %` <- as.numeric(results$`2.5 %`)
+results$`97.5 %` <- as.numeric(results$`97.5 %`)
+
+
+View(results)
+
+cor(results$ExpectedInfluence, results$OR) #0.77
+
+
+
+
+
+# mgm ---------------------------------------------------------------------
+
+dat2 <- dat %>%
+  select(-c(ID, AGE, AGEDEPR))
+
+
+gb2 <- goldbricker(dat2, p = 0.05, method = "hittner2003",
+                   threshold = 0.50, corMin = 0.5, progressbar = T)
+
+gb
+
+dat2 <- dat2 %>%
+  select(-c(D3,D11))
+
+nameslong <- c(
+  "1 You were bothered by things that usually don’t bother you.",
+  "2 You didn’t feel like eating, your appetite was poor.",
+  # "3 Couldn't shake off blues",
+  "4 You felt that you were just as good as other people.",
+  "5 You had trouble keeping your mind on what you were doing.",
+  "6 You felt depressed.",
+  "7 You felt that you were too tired to do things.",
+  "8 You felt hopeful about the future.",
+  "9 You thought your life had been a failure.",
+  "10 You felt fearful.",
+  # "11 Felt happy",
+  "12 You talked less than usual.",
+  "13 You felt lonely.",
+  "14 People were unfriendly to you.",
+  "15 You enjoyed life.",
+  "16 You felt sad.",
+  "17 You felt that people disliked you.",
+  "18 It was hard to get started doing things.",
+  "19 You felt life was not worth living.",
+  "DEPR")
+
+
+
+
+
+# IDK
+
+
+net2 <- mgm(data = as.matrix(dat2), 
+                               type = c(rep("g", 17),rep("c",1)),
+                               level = c(rep(1, 17),rep(2,1)), 
+                               lambdaSel = "EBIC", 
+                               lambdaGam = 0.25)
+
+
+netplot2 <- plot(net2, layout = "spring", vsize = 5, 
+                 border.color="black",
+                 nodeNames = nameslong)
+
+
+
+
+
+
+
+
 
 
 
