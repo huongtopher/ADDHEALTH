@@ -1,3 +1,12 @@
+---
+title: "demdescript"
+author: "Christopher Huong"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r}
+
 library(rio)
 library(tidyverse)
 
@@ -90,36 +99,14 @@ colnames(descript) <- c("age", "race", "hh_sex", "hh_median_age",
 
 library(table1)
 
+```
+
+
+```{r}
+
+table1(~age + race + hh_sex + hh_median_age + hh_maritalstatus + childrn_under_5 + hh_type + med_hh_income + prop_below_pov + hh_edu + unemployment + hh_occupation, data = descript, overall=c(left="Total"), caption = "Population descriptives", footnote = "* Mean and SD presented")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
