@@ -357,7 +357,10 @@ netplot1 <- plot(net1, layout = "spring", vsize = 5,
 ef1 <- centralityPlot(net1, include = c("ExpectedInfluence"), scale = 'z-scores',
                 labels = nameslong)
 
+ef1
+
 ef1.df <- cbind(ef1$data$node, nameslong, ef1$data$value)
+
 colnames(ef1.df) <- c('CESD', 'Symptom', 'ExpectedInfluence')
 
 View(ef1.df)
@@ -375,10 +378,10 @@ mod2 <- glm(DEPR ~ D2,
             family = "binomial", data = dat)
 or2 <- exp(cbind(OR = coef(mod2), confint(mod2)))[2,]
 
-# 
-# mod3 <- glm(DEPR ~ D3, 
-#             family = "binomial", data = dat)
-# or3 <- exp(cbind(OR = coef(mod3), confint(mod3)))[2,]
+
+mod3 <- glm(DEPR ~ D3,
+            family = "binomial", data = dat)
+or3 <- exp(cbind(OR = coef(mod3), confint(mod3)))[2,]
 
 
 mod4 <- glm(DEPR ~ D4, 
@@ -487,73 +490,6 @@ results$`97.5 %` <- as.numeric(results$`97.5 %`)
 View(results)
 
 cor(results$ExpectedInfluence, results$OR) #0.77
-
-
-
-
-
-# mgm ---------------------------------------------------------------------
-
-dat2 <- dat %>%
-  select(-c(ID, AGE, AGEDEPR))
-
-
-gb2 <- goldbricker(dat2, p = 0.05, method = "hittner2003",
-                   threshold = 0.50, corMin = 0.5, progressbar = T)
-
-gb
-
-dat2 <- dat2 %>%
-  select(-c(D3,D11))
-
-nameslong <- c(
-  "1 You were bothered by things that usually don’t bother you.",
-  "2 You didn’t feel like eating, your appetite was poor.",
-  # "3 Couldn't shake off blues",
-  "4 You felt that you were just as good as other people.",
-  "5 You had trouble keeping your mind on what you were doing.",
-  "6 You felt depressed.",
-  "7 You felt that you were too tired to do things.",
-  "8 You felt hopeful about the future.",
-  "9 You thought your life had been a failure.",
-  "10 You felt fearful.",
-  # "11 Felt happy",
-  "12 You talked less than usual.",
-  "13 You felt lonely.",
-  "14 People were unfriendly to you.",
-  "15 You enjoyed life.",
-  "16 You felt sad.",
-  "17 You felt that people disliked you.",
-  "18 It was hard to get started doing things.",
-  "19 You felt life was not worth living.",
-  "DEPR")
-
-
-
-
-
-# IDK
-
-
-net2 <- mgm(data = as.matrix(dat2), 
-                               type = c(rep("g", 17),rep("c",1)),
-                               level = c(rep(1, 17),rep(2,1)), 
-                               lambdaSel = "EBIC", 
-                               lambdaGam = 0.25)
-
-
-netplot2 <- plot(net2, layout = "spring", vsize = 5, 
-                 border.color="black",
-                 nodeNames = nameslong)
-
-
-
-
-
-
-
-
-
 
 
 
