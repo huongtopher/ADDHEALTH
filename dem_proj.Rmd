@@ -264,6 +264,7 @@ Create a new data frame with adolescents only, and remove those who reported bei
 
 This allows us to predict adult depression (W5) from adolescent (W1) symptomatology
 
+
 N = 3713 -> 2688
 ```{r}
 dat_adol <- dat %>%
@@ -271,13 +272,16 @@ dat_adol <- dat %>%
 
 
 dat_adol <- dat_adol[-which(dat_adol$AGEDEPR<18),]
+
+
+
+
 ```
 
 ```{r, message = F}
 library(qgraph)          #visualize networks
 library(mgm)           #mixed graphical modeling
 library(bootnet)         # runs all basic network analyses
-library(NetworkComparisonTest)  #compare networks
 library(networktools)         #bridge symptoms, goldbricker for node select
 ```
 
@@ -314,6 +318,8 @@ Select Wave I CESD items, check if any items would be redundant as nodes in a ne
 w1_cesd <- dat_adol %>%  
   select(D1:D19)
 
+w1_cesd <- na.omit(w1_cesd)
+
 
 gb <- goldbricker(w1_cesd, p = 0.01, method = "hittner2003",
                  threshold = 0.25, corMin = 0.5, progressbar = T)
@@ -340,13 +346,14 @@ net1 <- estimateNetwork(w1_cesd, default = "EBICglasso",
 netplot1 <- plot(net1, layout = "spring", vsize = 3.5, 
                  border.color="black",
                  nodeNames = nameslong,
+                 groups = groups,
                  legend.mode = "names",
                  label.cex = 1.7,
-                 legend.cex = .6,
-                 layoutOffset = c(-.1,0),
+                 legend.cex = .65,
+                 layoutOffset = c(0,0),
                  GLratio = 2.7,
-                 width = 12, height = 6,
-                  filetype = "pdf", filename = "netplot")
+                 width = 17, height = 9,
+                 filetype = "pdf", filename = "netplot")
 
 
 
@@ -361,8 +368,9 @@ Compute expected influence indices (EI) for each node. The EI of a node is the s
 
 
 ```{r}
-ef1 <- centralityPlot(net1, include = c("ExpectedInfluence"), scale = 'z-scores',
-                labels = nameslong)
+ef1 <- centralityPlot(net1, include = c("ExpectedInfluence"), scale = 'z-score',
+                labels = nameslong,
+                orderBy = "ExpectedInfluence")
 
 ef1
 ```
@@ -485,17 +493,15 @@ Bind ORs to data frame with EI, node names, and symptom names
 ```{r}
 
 
-or_all <- rbind(or1,or2,or3,or4,or5,or6,or7,or8,or9,
-                or10,or11,or12,or13,or14,or15,or16,or17,or18,or19)
+or_all <- rbind(or4,or15,or12,or11,or2,or8,or9,or18,or10,or14,or7,or9,or5,or1,or13,or17,or3,or16,or6)
 
 
-ef1.df <- cbind(ef1$data$node, nameslong, ef1$data$value)
+ef1.df <- as.data.frame(cbind(as.character(ef1$data$node), ef1$data$value))
 
-colnames(ef1.df) <- c('CESD', 'Symptom', 'ExpectedInfluence')
+colnames(ef1.df) <- c('Symptom', 'ExpectedInfluence')
 
 
-results <- cbind(ef1.df, or_all)
-results <- as.data.frame(results)
+results <- as.data.frame(cbind(ef1.df, or_all))
 options(digits = 2)
 results$ExpectedInfluence <- as.numeric(results$ExpectedInfluence)
 results$OR <- as.numeric(results$OR)
@@ -510,6 +516,8 @@ results
 Correlate ORs with EI
 ```{r}
 cor(results$ExpectedInfluence, results$OR)
+
+
 ```
 
 ```{r}
