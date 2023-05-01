@@ -273,7 +273,7 @@ dat_adol <- dat %>%
 
 dat_adol <- dat_adol[-which(dat_adol$AGEDEPR<18),]
 
-
+#save(dat_adol, file='dat_adol.rdata')
 
 
 ```
@@ -541,12 +541,53 @@ As many factors beyond depressive symtomatology and severity influences a depres
 Covariates include sex, race, household type (married family, non-family, other), median household income, and modal household education (no high school, high school, college).
 
 
+Check missingness of covariates
+
+
+```{r, message = F}
+library(naniar)
+
+gg_miss_var(dat_adol %>%
+  dplyr::select(bio_sex, race, hh_type, med_hh_income, hh_edu), show_pct = T)
+
+
+
+
+```
+
+
+Impute missing values using multiple imputation by chained equations.
+
+
+```{r, message = F}
+library(broom.mixed)
+library(MCMCglmm)
+library(msm)
+library(tmvtnorm)
+library(mice)
+library(miceadds)
+```
+
+
+```{r}
+dat_imp <- mice(dat_adol, method = 'pmm',
+                    maxit = 3,
+                    m = 3,
+                    seed = 111)
+
+
+save(dat_imp, file = "dat_imp.RData")
+
+```
+
+
 ```{r, message =F}
 
-mod1.1 <- glm(DEPR ~ D1 + 
+mod1.1 <- with(dat_imp, glm(DEPR ~ D1 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
+            family = "binomial"))
 or1.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+
 
 
 
@@ -697,27 +738,27 @@ or19.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
 
 
 ```{r}
-# or_all <- rbind(or4,or15,or12,or11,or2,or8,or9,or18,or10,or14,or7,or9,or5,or1,or13,or17,or3,or16,or6)
-# 
-# pvals <- c('0.057', '0.0045', '0.714', '0.45', '0.0045', '0.107', '0.155',
-#            '<0.001', '0.438', '0.865', '0.099', '0.155', '<0.001', '<0.001',
-#            '0.002', '0.169', '<0.001', '<0.001', '<0.001')
-# 
-# 
-# ef1.df <- as.data.frame(cbind(as.character(ef1$data$node), ef1$data$value))
-# 
-# colnames(ef1.df) <- c('Symptom', 'ExpectedInfluence')
-# 
-# 
-# results <- as.data.frame(cbind(ef1.df, or_all, pvals))
-# options(digits = 2)
-# results$ExpectedInfluence <- as.numeric(results$ExpectedInfluence)
-# results$OR <- as.numeric(results$OR)
-# results$`2.5 %` <- as.numeric(results$`2.5 %`)
-# results$`97.5 %` <- as.numeric(results$`97.5 %`)
-# 
-# 
-# results
+or_all.1 <- rbind(or4.1,or15.1,or12.1,or11.1,or2.1,or8,or9,or18,or10,or14,or7,or9,or5,or1,or13,or17,or3,or16,or6)
+
+pvals <- c('0.057', '0.0045', '0.714', '0.45', '0.0045', '0.107', '0.155',
+           '<0.001', '0.438', '0.865', '0.099', '0.155', '<0.001', '<0.001',
+           '0.002', '0.169', '<0.001', '<0.001', '<0.001')
+
+
+ef1.df <- as.data.frame(cbind(as.character(ef1$data$node), ef1$data$value))
+
+colnames(ef1.df) <- c('Symptom', 'ExpectedInfluence')
+
+
+results <- as.data.frame(cbind(ef1.df, or_all, pvals))
+options(digits = 2)
+results$ExpectedInfluence <- as.numeric(results$ExpectedInfluence)
+results$OR <- as.numeric(results$OR)
+results$`2.5 %` <- as.numeric(results$`2.5 %`)
+results$`97.5 %` <- as.numeric(results$`97.5 %`)
+
+
+results
 ```
 
 
