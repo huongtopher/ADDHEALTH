@@ -569,14 +569,32 @@ library(miceadds)
 ```
 
 
-```{r}
-dat_imp <- mice(dat_adol, method = 'pmm',
-                    maxit = 3,
-                    m = 3,
-                    seed = 111)
+```{r, message = F}
 
 
-save(dat_imp, file = "dat_imp.RData")
+predMatrix <- quickpred(dat_adol, mincor=0.10)
+predMatrix[, c("ID")] <- 0                       
+
+
+impMethod <- make.method(data = dat_adol, defaultMethod = "pmm")
+
+impMethod[c("race")] <- "polyreg"      
+impMethod[c("hh_edu")] <- "polyreg"
+impMethod[c("hh_type")] <- "polyreg"
+impMethod[c("med_hh_income")] <- "pmm"
+
+
+
+# dat_imp <- mice(dat_adol, method = 'pmm',
+#                 predictorMatrix = predMatrix,
+#                     maxit = 3,
+#                     m = 3,
+#                     seed = 111)
+
+
+#save(dat_imp, file = "dat_imp.RData")
+
+load('dat_imp.rdata')
 
 ```
 
@@ -586,163 +604,206 @@ save(dat_imp, file = "dat_imp.RData")
 mod1.1 <- with(dat_imp, glm(DEPR ~ D1 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
             family = "binomial"))
-or1.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+
+or1.1 <- summary(pool(mod1.1), conf.int = T, exponentiate = T)
+or1.1 <- cbind(OR = or1.1[2,2], '2.5%' = or1.1[2,7], '97.5%' = or1.1[2,8])
 
 
 
 
-mod2.1 <- glm(DEPR ~ D2 + 
+mod2.1 <- with(dat_imp, glm(DEPR ~ D2 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or2.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or2.1 <- summary(pool(mod2.1), conf.int = T, exponentiate = T)
+or2.1 <- cbind(OR = or2.1[2,2], '2.5%' = or2.1[2,7], '97.5%' = or2.1[2,8])
 
 
 
-mod3.1 <- glm(DEPR ~ D3 + 
+mod3.1 <- with(dat_imp, glm(DEPR ~ D3 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or3.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or3.1 <- summary(pool(mod3.1), conf.int = T, exponentiate = T)
+or3.1 <- cbind(OR = or3.1[2,2], '2.5%' = or3.1[2,7], '97.5%' = or3.1[2,8])
 
 
 
-mod4.1 <- glm(DEPR ~ D4 + 
+mod4.1 <- with(dat_imp, glm(DEPR ~ D4 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or4.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or4.1 <- summary(pool(mod4.1), conf.int = T, exponentiate = T)
+or4.1 <- cbind(OR = or4.1[2,2], '2.5%' = or4.1[2,7], '97.5%' = or4.1[2,8])
 
 
 
-mod5.1 <- glm(DEPR ~ D5 + 
+mod5.1 <- with(dat_imp, glm(DEPR ~ D5 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or5.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or5.1 <- summary(pool(mod5.1), conf.int = T, exponentiate = T)
+or5.1 <- cbind(OR = or5.1[2,2], '2.5%' = or5.1[2,7], '97.5%' = or5.1[2,8])
 
 
 
-mod6.1 <- glm(DEPR ~ D6 + 
+mod6.1 <- with(dat_imp, glm(DEPR ~ D6 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or6.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or6.1 <- summary(pool(mod6.1), conf.int = T, exponentiate = T)
+or6.1 <- cbind(OR = or6.1[2,2], '2.5%' = or6.1[2,7], '97.5%' = or6.1[2,8])
 
 
 
 
-mod7.1 <- glm(DEPR ~ D7 + 
+mod7.1 <- with(dat_imp, glm(DEPR ~ D7 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or7.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or7.1 <- summary(pool(mod7.1), conf.int = T, exponentiate = T)
+or7.1 <- cbind(OR = or7.1[2,2], '2.5%' = or7.1[2,7], '97.5%' = or7.1[2,8])
 
 
 
 
-mod8.1 <- glm(DEPR ~ D8 + 
+mod8.1 <- with(dat_imp, glm(DEPR ~ D8 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or8.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or8.1 <- summary(pool(mod8.1), conf.int = T, exponentiate = T)
+or8.1 <- cbind(OR = or8.1[2,2], '2.5%' = or8.1[2,7], '97.5%' = or8.1[2,8])
 
 
 
 
-mod9.1 <- glm(DEPR ~ D9 + 
+mod9.1 <- with(dat_imp, glm(DEPR ~ D9 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or9.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or9.1 <- summary(pool(mod9.1), conf.int = T, exponentiate = T)
+or9.1 <- cbind(OR = or9.1[2,2], '2.5%' = or9.1[2,7], '97.5%' = or9.1[2,8])
 
 
 
 
-mod10.1 <- glm(DEPR ~ D10 + 
+mod10.1 <- with(dat_imp, glm(DEPR ~ D10 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or10.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or10.1 <- summary(pool(mod10.1), conf.int = T, exponentiate = T)
+or10.1 <- cbind(OR = or10.1[2,2], '2.5%' = or10.1[2,7], '97.5%' = or10.1[2,8])
 
 
 
 
-mod11.1 <- glm(DEPR ~ D11 + 
+mod11.1 <- with(dat_imp, glm(DEPR ~ D11 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or11.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or11.1 <- summary(pool(mod11.1), conf.int = T, exponentiate = T)
+or11.1 <- cbind(OR = or11.1[2,2], '2.5%' = or11.1[2,7], '97.5%' = or11.1[2,8])
 
 
 
-mod12.1 <- glm(DEPR ~ D12 + 
+
+
+mod12.1 <- with(dat_imp, glm(DEPR ~ D12 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or12.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or12.1 <- summary(pool(mod12.1), conf.int = T, exponentiate = T)
+or12.1 <- cbind(OR = or12.1[2,2], '2.5%' = or12.1[2,7], '97.5%' = or12.1[2,8])
 
 
 
-mod13.1 <- glm(DEPR ~ D13 + 
+
+
+mod13.1 <- with(dat_imp, glm(DEPR ~ D13 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or13.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or13.1 <- summary(pool(mod13.1), conf.int = T, exponentiate = T)
+or13.1 <- cbind(OR = or13.1[2,2], '2.5%' = or13.1[2,7], '97.5%' = or13.1[2,8])
 
 
 
 
 
-mod14.1 <- glm(DEPR ~ D14 + 
+mod14.1 <- with(dat_imp, glm(DEPR ~ D14 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or14.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or14.1 <- summary(pool(mod14.1), conf.int = T, exponentiate = T)
+or14.1 <- cbind(OR = or14.1[2,2], '2.5%' = or14.1[2,7], '97.5%' = or14.1[2,8])
 
 
 
 
 
-mod15.1 <- glm(DEPR ~ D15 + 
+mod15.1 <- with(dat_imp, glm(DEPR ~ D15 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or15.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or15.1 <- summary(pool(mod15.1), conf.int = T, exponentiate = T)
+or15.1 <- cbind(OR = or15.1[2,2], '2.5%' = or15.1[2,7], '97.5%' = or15.1[2,8])
 
 
 
 
 
-mod16.1 <- glm(DEPR ~ D16 + 
+mod16.1 <- with(dat_imp, glm(DEPR ~ D16 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or16.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or16.1 <- summary(pool(mod16.1), conf.int = T, exponentiate = T)
+or16.1 <- cbind(OR = or16.1[2,2], '2.5%' = or16.1[2,7], '97.5%' = or16.1[2,8])
 
 
 
 
 
-mod17.1 <- glm(DEPR ~ D17 + 
+mod17.1 <- with(dat_imp, glm(DEPR ~ D17 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or17.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or17.1 <- summary(pool(mod17.1), conf.int = T, exponentiate = T)
+or17.1 <- cbind(OR = or17.1[2,2], '2.5%' = or17.1[2,7], '97.5%' = or17.1[2,8])
 
 
 
 
 
-mod18.1 <- glm(DEPR ~ D18 + 
+mod18.1 <- with(dat_imp, glm(DEPR ~ D18 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or18.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or18.1 <- summary(pool(mod1.1), conf.int = T, exponentiate = T)
+or18.1 <- cbind(OR = or18.1[2,2], '2.5%' = or18.1[2,7], '97.5%' = or18.1[2,8])
 
 
 
 
 
 
-mod19.1 <- glm(DEPR ~ D19 + 
+mod19.1 <- with(dat_imp, glm(DEPR ~ D19 + 
                 bio_sex + race + hh_type + med_hh_income + hh_edu,
-            family = "binomial", data = dat_adol)
-or19.1 <- exp(cbind(OR = coef(mod1), confint(mod1)))[2,]
+            family = "binomial"))
+
+or19.1 <- summary(pool(mod19.1), conf.int = T, exponentiate = T)
+or19.1 <- cbind(OR = or19.1[2,2], '2.5%' = or19.1[2,7], '97.5%' = or19.1[2,8])
+
 
 ```
 
 
 
 ```{r}
-or_all.1 <- rbind(or4.1,or15.1,or12.1,or11.1,or2.1,or8,or9,or18,or10,or14,or7,or9,or5,or1,or13,or17,or3,or16,or6)
+or_all.1 <- rbind(or4.1,or15.1,or12.1,or11.1,or2.1,or8.1,or9.1,or18.1,or10.1,or14.1,or7.1,or9.1,or5.1,or1.1,or13.1,or17.1,or3.1,or16.1,or6.1)
 
-pvals <- c('0.057', '0.0045', '0.714', '0.45', '0.0045', '0.107', '0.155',
-           '<0.001', '0.438', '0.865', '0.099', '0.155', '<0.001', '<0.001',
-           '0.002', '0.169', '<0.001', '<0.001', '<0.001')
+pvals <- c('<0.001', '0.086', '<0.001', '0.308', '<0.001', '<0.001', '0.180',
+           '0.090', '0.136', '0.639', '0.248', '0.830', '0.018', '0.837',
+           '0.027', '0.003', '0.201', '<0.001', '0.774')
 
 
 ef1.df <- as.data.frame(cbind(as.character(ef1$data$node), ef1$data$value))
@@ -750,23 +811,40 @@ ef1.df <- as.data.frame(cbind(as.character(ef1$data$node), ef1$data$value))
 colnames(ef1.df) <- c('Symptom', 'ExpectedInfluence')
 
 
-results <- as.data.frame(cbind(ef1.df, or_all, pvals))
+results.1 <- as.data.frame(cbind(ef1.df, or_all.1, pvals))
 options(digits = 2)
-results$ExpectedInfluence <- as.numeric(results$ExpectedInfluence)
-results$OR <- as.numeric(results$OR)
-results$`2.5 %` <- as.numeric(results$`2.5 %`)
-results$`97.5 %` <- as.numeric(results$`97.5 %`)
+results.1$ExpectedInfluence <- as.numeric(results.1$ExpectedInfluence)
+results.1$OR <- as.numeric(results.1$OR)
+results.1$`2.5%` <- as.numeric(results.1$`2.5%`)
+results.1$`97.5%` <- as.numeric(results.1$`97.5%`)
 
 
-results
+results.1
+
+#save(results.1, file='results1.rdata')
 ```
 
 
 
+```{r}
+
+ggplot(results.1, aes(x = ExpectedInfluence, y = OR)) + 
+  geom_point(size = 3, shape = 21, color = "black", fill = "black") + 
+  geom_smooth(method = lm) +
+  stat_cor(p.accuracy = 0.001, r.accuracy = 0.01)+
+  labs(y = "OR", x = "Expected Influence", title = "Relationship between EI of adolescent depression symptoms and OR of adult depression diagnosis, controlling for covariates") + 
+  theme_classic() + theme(plot.title = element_text(hjust = 0.5, size = 8), 
+                          axis.title = element_text(size = 15), 
+                          axis.title.y = element_text(angle = 0, vjust = 0.5), 
+                          axis.text = element_text(size = 11))
+
+```
 
 
+Node centrality of depressive symptoms during adolescence, quantified using the expected influence index, is moderately predictive of an adult diagnosis of depression, with correlations of EI and ORs of 0.73-0.75.
 
 
+Limitations include the absence of core depression symptoms (e.g., insomnia, anhedonia) included in the CESD
 
 
 
