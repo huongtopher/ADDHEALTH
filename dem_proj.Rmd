@@ -9,6 +9,8 @@ output: html_document
 library(rio)
 library(tidyverse)
 library(ggpubr)
+library(knitr)
+library(kableExtra)
 
 ```
 Import wave I and V from ADD Health.
@@ -322,7 +324,7 @@ w1_cesd <- na.omit(w1_cesd)
 
 
 gb <- goldbricker(w1_cesd, p = 0.01, method = "hittner2003",
-                 threshold = 0.25, corMin = 0.5, progressbar = T)
+                 threshold = 0.25, corMin = 0.5, progressbar = F)
 gb
 
 ```
@@ -362,7 +364,7 @@ netplot1 <- plot(net1, layout = "spring", vsize = 3.5,
 
 
 \begin{center} <br>
-\includegraphics[width=8in]{netplot.pdf} <br>
+\includegraphics[width=12in]{netplot.pdf} <br>
 \end{center}
 
 Compute expected influence indices (EI) for each node. The EI of a node is the sum of the weights connected to that node. It's a measure of the "centrality" of a node in a network. These are highly connected nodes, and thus hypothesized to be influential in the network. As depression is conceptualized here as a causal network, central nodes may be important targets for intervention.
@@ -373,7 +375,7 @@ ef1 <- centralityPlot(net1, include = c("ExpectedInfluence"), scale = 'z-score',
                 labels = nameslong,
                 orderBy = "ExpectedInfluence")
 
-ef1
+
 ```
 
 
@@ -514,11 +516,13 @@ results$`2.5 %` <- as.numeric(results$`2.5 %`)
 results$`97.5 %` <- as.numeric(results$`97.5 %`)
 
 
-results
+kbl(results) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 9) %>%
+   scroll_box(width = "100%")
 
 ```
 
-Correlate ORs with EI
+Plot association of EIs with ORs
 
 
 ```{r}
@@ -598,6 +602,7 @@ load('dat_imp.rdata')
 
 ```
 
+Model a multiple logistic regression of depression diagnosis with depression and covariates as predictors. Use all imputed data sets, and combine using Rubin's Rules.
 
 ```{r, message =F}
 
@@ -797,6 +802,7 @@ or19.1 <- cbind(OR = or19.1[2,2], '2.5%' = or19.1[2,7], '97.5%' = or19.1[2,8])
 ```
 
 
+Consolidate results into a table
 
 ```{r}
 or_all.1 <- rbind(or4.1,or15.1,or12.1,or11.1,or2.1,or8.1,or9.1,or18.1,or10.1,or14.1,or7.1,or9.1,or5.1,or1.1,or13.1,or17.1,or3.1,or16.1,or6.1)
@@ -819,12 +825,14 @@ results.1$`2.5%` <- as.numeric(results.1$`2.5%`)
 results.1$`97.5%` <- as.numeric(results.1$`97.5%`)
 
 
-results.1
+kbl(results.1) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 9) %>%
+   scroll_box(width = "100%")
 
 #save(results.1, file='results1.rdata')
 ```
 
-
+Plot relationship between EIs and aORs of depression symptoms
 
 ```{r}
 
@@ -832,7 +840,7 @@ ggplot(results.1, aes(x = ExpectedInfluence, y = OR)) +
   geom_point(size = 3, shape = 21, color = "black", fill = "black") + 
   geom_smooth(method = lm) +
   stat_cor(p.accuracy = 0.001, r.accuracy = 0.01)+
-  labs(y = "OR", x = "Expected Influence", title = "Relationship between EI of adolescent depression symptoms and OR of adult depression diagnosis, controlling for covariates") + 
+  labs(y = "aOR", x = "Expected Influence", title = "Relationship between EI of adolescent depression symptoms and OR of adult depression diagnosis, controlling for covariates") + 
   theme_classic() + theme(plot.title = element_text(hjust = 0.5, size = 8), 
                           axis.title = element_text(size = 15), 
                           axis.title.y = element_text(angle = 0, vjust = 0.5), 
@@ -844,7 +852,7 @@ ggplot(results.1, aes(x = ExpectedInfluence, y = OR)) +
 Node centrality of depressive symptoms during adolescence, quantified using the expected influence index, is moderately predictive of an adult diagnosis of depression, with correlations of EI and ORs of 0.73-0.75.
 
 
-Limitations include the absence of core depression symptoms (e.g., insomnia, anhedonia) included in the CESD
+Limitations include the absence of core depression symptoms (e.g., insomnia, anhedonia) included in the CESD, and unobserved confounders of the relationship between depression diagnosis and individual symptoms.
 
 
 
